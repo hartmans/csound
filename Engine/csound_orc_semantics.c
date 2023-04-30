@@ -697,56 +697,63 @@ int check_array_arg(char* found, char* required) {
 int check_in_arg(char* found, char* required) {
     char* t;
     int i;
+    const char *our_required = required;
     
     if (UNLIKELY(found == NULL || required == NULL)) {
       return 0;
     }
 
-     if(required[0] == 'K' && found[0] == 'k'){
-      return 1;
-     }
+    if(required[0] == 'K' ) {
+      if (found[0] == 'k') {
+        return 1;
+      }
+      /* Treat K as k going forward, for example so it can match
+       * against a constant or i-time argument
+       */
+      our_required = "k";
+    }
 
-    if (strcmp(found, required) == 0) {
+    if (strcmp(found, our_required) == 0) {
       return 1;
     }
 
-    if (*required == '.' || *required == '?' || *required == '*') {
+    if (*our_required == '.' || *our_required == '?' || *our_required == '*') {
       return 1;
     }
 
-    if (*found == '[' || *required == '[') {
-      if (*found != *required) {
+    if (*found == '[' || *our_required == '[') {
+      if (*found != *our_required) {
         return 0;
       }
-      return check_array_arg(found, required);
+      return check_array_arg(found, our_required);
     }
 
     t = (char*)POLY_IN_TYPES[0];
 
     for (i = 0; t != NULL; i += 2) {
-      if (strcmp(required, t) == 0) {
+      if (strcmp(our_required, t) == 0) {
         return (strchr(POLY_IN_TYPES[i + 1], *found) != NULL);
       }
       t = (char*)POLY_IN_TYPES[i + 2];
     }
 
-    if (is_in_optional_arg(*required)) {
+    if (is_in_optional_arg(*our_required)) {
       t = (char*)OPTIONAL_IN_TYPES[0];
       for (i = 0; t != NULL; i += 2) {
-        if (strcmp(required, t) == 0) {
+        if (strcmp(our_required, t) == 0) {
           return (strchr(OPTIONAL_IN_TYPES[i + 1], *found) != NULL);
         }
         t = (char*)OPTIONAL_IN_TYPES[i + 2];
       }
     }
 
-    if (!is_in_var_arg(*required)) {
+    if (!is_in_var_arg(*our_required)) {
       return 0;
     }
 
     t = (char*)VAR_ARG_IN_TYPES[0];
     for (i = 0; t != NULL; i += 2) {
-      if (strcmp(required, t) == 0) {
+      if (strcmp(our_required, t) == 0) {
         return (strchr(VAR_ARG_IN_TYPES[i + 1], *found) != NULL);
       }
       t = (char*)VAR_ARG_IN_TYPES[i + 2];
