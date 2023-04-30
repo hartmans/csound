@@ -697,14 +697,14 @@ int check_array_arg(char* found, char* required) {
 int check_in_arg(char* found, char* required) {
     char* t;
     int i;
-
-     if(required[0] == 'K' && found[0] == 'k'){
-      return 1;
-     }
     
     if (UNLIKELY(found == NULL || required == NULL)) {
       return 0;
     }
+
+     if(required[0] == 'K' && found[0] == 'k'){
+      return 1;
+     }
 
     if (strcmp(found, required) == 0) {
       return 1;
@@ -851,15 +851,14 @@ inline static int is_out_var_arg(char arg) {
 int check_out_arg(char* found, char* required) {
     char* t;
     int i;
-    
 
-
-    if(required[0] == 'K' && found[0] == 'k'){
-    return 1;
-    }
 
     if (UNLIKELY(found == NULL || required == NULL)) {
       return 0;
+    }
+
+    if(required[0] == 'K' && found[0] == 'k'){
+    return 1;
     }
 
     // constants not allowed in out args
